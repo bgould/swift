@@ -28,6 +28,7 @@ import static com.facebook.swift.codec.metadata.ThriftType.I32;
 import static com.facebook.swift.codec.metadata.ThriftType.I64;
 import static com.facebook.swift.codec.metadata.ThriftType.STRING;
 import static com.facebook.swift.codec.metadata.ThriftType.VOID;
+import static com.facebook.swift.codec.metadata.ThriftType.array;
 import static com.facebook.swift.codec.metadata.ThriftType.enumType;
 import static com.facebook.swift.codec.metadata.ThriftType.list;
 import static com.facebook.swift.codec.metadata.ThriftType.map;
@@ -81,7 +82,8 @@ public class ThriftCatalog
     private final ConcurrentMap<Class<?>, ThriftEnumMetadata<?>> enums = new ConcurrentHashMap<>();
     private final ConcurrentMap<Type, TypeCoercion> coercions = new ConcurrentHashMap<>();
     private final ConcurrentMap<Class<?>, ThriftType> manualTypes = new ConcurrentHashMap<>();
-    
+    private final ConcurrentMap<Type, ThriftType> typeCache = new ConcurrentHashMap<>();
+
     private final ThreadLocal<Deque<Type>> stack = new ThreadLocal<Deque<Type>>()
     {
         @Override
@@ -206,6 +208,17 @@ public class ThriftCatalog
     public ThriftType getThriftType(Type javaType)
             throws IllegalArgumentException
     {
+        ThriftType thriftType = typeCache.get(javaType);
+        if (thriftType == null) {
+            thriftType = getThriftTypeUncached(javaType);
+            typeCache.putIfAbsent(javaType, thriftType);
+        }
+        return thriftType;
+    }
+
+    private ThriftType getThriftTypeUncached(Type javaType)
+            throws IllegalArgumentException
+    {
         Class<?> rawType = TypeToken.of(javaType).getRawType();
         ThriftType manualType = manualTypes.get(rawType);
         if (manualType != null) {
@@ -236,9 +249,16 @@ public class ThriftCatalog
             return BINARY;
         }
         if (Enum.class.isAssignableFrom(rawType)) {
-            Class<?> enumClass = TypeToken.of(javaType).getRawType();
-            ThriftEnumMetadata<? extends Enum<?>> thriftEnumMetadata = getThriftEnumMetadata(enumClass);
+            ThriftEnumMetadata<? extends Enum<?>> thriftEnumMetadata = getThriftEnumMetadata(rawType);
             return enumType(thriftEnumMetadata);
+        }
+        if (rawType.isArray()) {
+            Class<?> elementType = rawType.getComponentType();
+            if (elementType == byte.class) {
+                // byte[] is encoded as BINARY and requires a coersion
+                return coercions.get(javaType).getThriftType();
+            }
+            return array(getThriftType(elementType));
         }
         if (Map.class.isAssignableFrom(rawType)) {
             Type mapKeyType = getMapKeyType(javaType);
@@ -306,6 +326,10 @@ public class ThriftCatalog
         if (Enum.class.isAssignableFrom(rawType)) {
             return true;
         }
+        if (rawType.isArray()) {
+            Class<?> elementType = rawType.getComponentType();
+            return isSupportedArrayComponentType(elementType);
+        }
         if (Map.class.isAssignableFrom(rawType)) {
             Type mapKeyType = getMapKeyType(javaType);
             Type mapValueType = getMapValueType(javaType);
@@ -331,6 +355,16 @@ public class ThriftCatalog
             return true;
         }
         return false;
+    }
+
+    public boolean isSupportedArrayComponentType(Class<?> componentType)
+    {
+        return boolean.class == componentType ||
+                byte.class == componentType ||
+                short.class == componentType ||
+                int.class == componentType ||
+                long.class == componentType ||
+                double.class == componentType;
     }
 
     /**

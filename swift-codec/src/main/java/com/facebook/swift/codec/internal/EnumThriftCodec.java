@@ -64,7 +64,8 @@ public class EnumThriftCodec<T extends Enum<T>> implements ThriftCodec<T>
                 }
             }
         }
-        throw new IllegalArgumentException(
+        // unknown, throw unknown value exception
+        throw new UnknownEnumValueException(
                 String.format(
                         "Enum %s does not have a value for %s",
                         enumMetadata.getEnumClass(),

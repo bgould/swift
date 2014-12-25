@@ -226,6 +226,66 @@ public class TProtocolReader
         return fieldValue;
     }
 
+    public boolean[] readBoolArrayField()
+            throws TException
+    {
+        if (!checkReadState(TType.LIST)) {
+            return null;
+        }
+        currentField = null;
+        boolean[] fieldValue = readBoolArray();
+        protocol.readFieldEnd();
+        return fieldValue;
+    }
+
+    public short[] readI16ArrayField()
+            throws TException
+    {
+        if (!checkReadState(TType.LIST)) {
+            return null;
+        }
+        currentField = null;
+        short[] fieldValue = readI16Array();
+        protocol.readFieldEnd();
+        return fieldValue;
+    }
+
+    public int[] readI32ArrayField()
+            throws TException
+    {
+        if (!checkReadState(TType.LIST)) {
+            return null;
+        }
+        currentField = null;
+        int[] fieldValue = readI32Array();
+        protocol.readFieldEnd();
+        return fieldValue;
+    }
+
+    public long[] readI64ArrayField()
+            throws TException
+    {
+        if (!checkReadState(TType.LIST)) {
+            return null;
+        }
+        currentField = null;
+        long[] fieldValue = readI64Array();
+        protocol.readFieldEnd();
+        return fieldValue;
+    }
+
+    public double[] readDoubleArrayField()
+            throws TException
+    {
+        if (!checkReadState(TType.LIST)) {
+            return null;
+        }
+        currentField = null;
+        double[] fieldValue = readDoubleArray();
+        protocol.readFieldEnd();
+        return fieldValue;
+    }
+
     public <E> Set<E> readSetField(ThriftCodec<Set<E>> setCodec)
             throws Exception
     {
@@ -269,7 +329,12 @@ public class TProtocolReader
             return null;
         }
         currentField = null;
-        T fieldValue = enumCodec.read(protocol);
+        T fieldValue = null;
+        try {
+            fieldValue = enumCodec.read(protocol);
+        } catch (UnknownEnumValueException e) {
+          // return null
+        }
         protocol.readFieldEnd();
         return fieldValue;
     }
@@ -322,14 +387,78 @@ public class TProtocolReader
         return protocol.readString();
     }
 
+    public boolean[] readBoolArray()
+            throws TException
+    {
+        TList list = protocol.readListBegin();
+        boolean[] array = new boolean[list.size];
+        for (int i = 0; i < list.size; i++) {
+            array[i] = readBool();
+        }
+        protocol.readListEnd();
+        return array;
+    }
+
+    public short[] readI16Array()
+            throws TException
+    {
+        TList list = protocol.readListBegin();
+        short[] array = new short[list.size];
+        for (int i = 0; i < list.size; i++) {
+            array[i] = readI16();
+        }
+        protocol.readListEnd();
+        return array;
+    }
+
+    public int[] readI32Array()
+            throws TException
+    {
+        TList list = protocol.readListBegin();
+        int[] array = new int[list.size];
+        for (int i = 0; i < list.size; i++) {
+            array[i] = readI32();
+        }
+        protocol.readListEnd();
+        return array;
+    }
+
+    public long[] readI64Array()
+            throws TException
+    {
+        TList list = protocol.readListBegin();
+        long[] array = new long[list.size];
+        for (int i = 0; i < list.size; i++) {
+            array[i] = readI64();
+        }
+        protocol.readListEnd();
+        return array;
+    }
+
+    public double[] readDoubleArray()
+            throws TException
+    {
+        TList list = protocol.readListBegin();
+        double[] array = new double[list.size];
+        for (int i = 0; i < list.size; i++) {
+            array[i] = readDouble();
+        }
+        protocol.readListEnd();
+        return array;
+    }
+
     public <E> Set<E> readSet(ThriftCodec<E> elementCodec)
             throws Exception
     {
         TSet tSet = protocol.readSetBegin();
         Set<E> set = new HashSet<>();
         for (int i = 0; i < tSet.size; i++) {
-            E element = elementCodec.read(protocol);
-            set.add(element);
+            try {
+                E element = elementCodec.read(protocol);
+                set.add(element);
+            } catch (UnknownEnumValueException e) {
+              // continue
+            }
         }
         protocol.readSetEnd();
         return set;
@@ -341,8 +470,12 @@ public class TProtocolReader
         TList tList = protocol.readListBegin();
         List<E> list = new ArrayList<>();
         for (int i = 0; i < tList.size; i++) {
-            E element = elementCodec.read(protocol);
-            list.add(element);
+            try {
+                E element = elementCodec.read(protocol);
+                list.add(element);
+            } catch (UnknownEnumValueException e) {
+              // continue
+            }
         }
         protocol.readListEnd();
         return list;
@@ -356,9 +489,13 @@ public class TProtocolReader
         TMap tMap = protocol.readMapBegin();
         Map<K, V> map = new HashMap<>();
         for (int i = 0; i < tMap.size; i++) {
-            K key = keyCodec.read(protocol);
-            V value = valueCodec.read(protocol);
-            map.put(key, value);
+            try {
+                K key = keyCodec.read(protocol);
+                V value = valueCodec.read(protocol);
+                map.put(key, value);
+            } catch (UnknownEnumValueException e) {
+              // continue
+            }
         }
         protocol.readMapEnd();
         return map;
