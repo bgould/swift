@@ -35,6 +35,7 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import com.facebook.swift.codec.DiscreteComponent.BasicComponent;
+
 import com.facebook.swift.codec.generics.ConcreteDerivedFromGeneric;
 import com.facebook.swift.codec.generics.ConcreteDerivedFromGenericBean;
 import com.facebook.swift.codec.generics.ConcreteThriftStructDerivedFromGenericField;
