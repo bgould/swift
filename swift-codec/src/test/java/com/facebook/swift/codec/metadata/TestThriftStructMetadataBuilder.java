@@ -15,8 +15,15 @@
  */
 package com.facebook.swift.codec.metadata;
 
+import com.facebook.swift.codec.ThriftConstructor;
+import com.facebook.swift.codec.ThriftField;
+import com.facebook.swift.codec.ThriftStruct;
+import com.google.common.reflect.TypeToken;
+
+import static com.facebook.swift.codec.ThriftField.Requiredness;
 import static org.fest.assertions.Assertions.assertThat;
 import static org.testng.Assert.fail;
+import org.testng.annotations.Test;
 
 import java.lang.reflect.Type;
 import java.util.concurrent.locks.Lock;
@@ -26,11 +33,6 @@ import org.testng.annotations.Test;
 import com.facebook.swift.codec.ComponentWithMultipleAnnotatedInterfaces;
 import com.facebook.swift.codec.ComponentWithSetterAndNoBuilder;
 import com.facebook.swift.codec.DiscreteComponent;
-import com.facebook.swift.codec.ThriftConstructor;
-import com.facebook.swift.codec.ThriftField;
-import com.facebook.swift.codec.ThriftField.Requiredness;
-import com.facebook.swift.codec.ThriftStruct;
-import com.google.common.reflect.TypeToken;
 
 public class TestThriftStructMetadataBuilder
 {
@@ -416,4 +418,14 @@ public class TestThriftStructMetadataBuilder
 
     }
 
+    public void testNonFinalStructsOk()
+    {
+        ThriftStructMetadataBuilder builder = new ThriftStructMetadataBuilder(new ThriftCatalog(), NotFinalStruct.class);
+        builder.build();
+    }
+
+    @ThriftStruct
+    public static class NotFinalStruct
+    {
+    }
 }
