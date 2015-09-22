@@ -28,8 +28,6 @@ import org.testng.annotations.Test;
 import java.lang.reflect.Type;
 import java.util.concurrent.locks.Lock;
 
-import org.testng.annotations.Test;
-
 import com.facebook.swift.codec.ComponentWithMultipleAnnotatedInterfaces;
 import com.facebook.swift.codec.ComponentWithSetterAndNoBuilder;
 import com.facebook.swift.codec.DiscreteComponent;
@@ -418,6 +416,7 @@ public class TestThriftStructMetadataBuilder
 
     }
 
+    @Test
     public void testNonFinalStructsOk()
     {
         ThriftStructMetadataBuilder builder = new ThriftStructMetadataBuilder(new ThriftCatalog(), NotFinalStruct.class);

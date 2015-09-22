@@ -15,10 +15,10 @@
  */
 package com.facebook.swift.codec.metadata;
 
-import static com.facebook.swift.codec.ThriftField.Requiredness;
 import static com.facebook.swift.codec.metadata.FieldKind.THRIFT_UNION_ID;
 import static com.facebook.swift.codec.metadata.ReflectionHelper.findAnnotatedMethods;
 
+import com.facebook.swift.codec.ThriftField.Requiredness;
 import com.facebook.swift.codec.ThriftUnion;
 import com.facebook.swift.codec.ThriftUnionId;
 import com.facebook.swift.codec.metadata.ThriftStructMetadata.MetadataType;
