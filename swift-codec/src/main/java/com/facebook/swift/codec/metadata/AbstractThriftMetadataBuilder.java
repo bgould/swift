@@ -468,7 +468,9 @@ public abstract class AbstractThriftMetadataBuilder
                 extractors.add(methodExtractor);
             }
             else {
-                metadataErrors.addError("Reader method %s.%s is not allowed on a builder class", clazz.getName(), method.getName());
+                // TODO: check if additional checks might be necessary and write tests if appropriate
+                // n.b.: removed this check to allow a class that implements an interface to be a builder for structs of that interface
+                //metadataErrors.addError("Reader method %s.%s is not allowed on a builder class", clazz.getName(), method.getName());
             }
         }
         else if (isValidateSetter(method)) {
