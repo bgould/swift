@@ -20,7 +20,8 @@
     <parent>
         <artifactId>swift-root</artifactId>
         <groupId>com.facebook.swift</groupId>
-        <version>0.16.0-thriftee</version>
+        <version>0.17.0-thriftee</version>
+        <relativePath>../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 

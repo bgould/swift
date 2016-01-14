@@ -23,19 +23,35 @@
   <parent>
     <groupId>com.facebook.swift</groupId>
     <artifactId>swift-root</artifactId>
-    <version>0.17.0-thriftee</version>
+    <version>0.17.0</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
 
-  <artifactId>swift-annotations</artifactId>
+  <artifactId>swift-test-utils</artifactId>
   <packaging>jar</packaging>
   <name>${project.artifactId}</name>
-  <description>Annotations for use in Swift interfaces and types</description>
+  <description>Test utilities for use in Swift modules</description>
 
   <properties>
     <air.main.basedir>${project.parent.basedir}</air.main.basedir>
   </properties>
 
   <dependencies>
+
+    <dependency>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>com.google.code.findbugs</groupId>
+      <artifactId>annotations</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.testng</groupId>
+      <artifactId>testng</artifactId>
+    </dependency>
+
   </dependencies>
 </project>
