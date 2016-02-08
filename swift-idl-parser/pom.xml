@@ -21,9 +21,9 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <groupId>com.facebook.swift</groupId>
+    <groupId>org.thriftee</groupId>
     <artifactId>swift-root</artifactId>
-    <version>0.17.0-thriftee</version>
+    <version>0.17.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>swift-idl-parser</artifactId>
@@ -58,7 +58,7 @@
     </dependency>
     
     <dependency>
-      <groupId>com.facebook.swift</groupId>
+      <groupId>org.thriftee</groupId>
       <artifactId>swift-test-utils</artifactId>
       <scope>test</scope>
     </dependency>
